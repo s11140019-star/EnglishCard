@@ -1,7 +1,171 @@
 <!DOCTYPE html>
-<html lang='zh-TW'>
-<head><meta charset='UTF-8'><title>k123github網站1.1</title></head>
-<body style='font-family:sans-serif; text-align:center; padding:50px;'>
-<h1>歡迎使用 k123github網站1.1 部署的網站！</h1>
-<p>專題資料夾已順利上傳至 GitHub Pages。</p>
-</body></html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文單字配對大挑戰 | Ultimate English Word Match</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Dynamic Background Glow Shapes -->
+        <div class="bg-glow glow-1"></div>
+        <div class="bg-glow glow-2"></div>
+        <div class="bg-glow glow-3"></div>
+
+        <!-- Header Bar -->
+        <header class="game-header">
+            <div class="brand">
+                <span class="game-icon">🔤</span>
+                <div>
+                    <h1>英文單字配對大挑戰</h1>
+                    <p class="subtitle">Ultimate English Word Matching Game</p>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <button id="bgm-toggle" class="icon-btn" title="背景音樂">
+                    <span id="bgm-icon">🎵</span>
+                </button>
+                <button id="audio-toggle" class="icon-btn" title="音效">
+                    <span id="audio-icon">🔊</span>
+                </button>
+                <button id="restart-btn" class="btn btn-primary">
+                    <span class="btn-icon">🔄</span> 重玩本關
+                </button>
+            </div>
+        </header>
+
+        <!-- Category & Difficulty Bar -->
+        <div class="setting-bar">
+            <!-- Category Theme Tabs -->
+            <nav class="category-nav">
+                <button class="category-tab active" data-category="fruits">
+                    <span class="tab-icon">🍎</span> 水果 (Fruits)
+                </button>
+                <button class="category-tab" data-category="animals">
+                    <span class="tab-icon">🐱</span> 動物 (Animals)
+                </button>
+                <button class="category-tab" data-category="vehicles">
+                    <span class="tab-icon">🚀</span> 交通 (Vehicles)
+                </button>
+            </nav>
+
+            <!-- Difficulty Pills -->
+            <div class="difficulty-nav">
+                <button class="diff-tab active" data-count="4">⚡ 4 單字 (標準)</button>
+                <button class="diff-tab" data-count="6">🔥 6 單字 (挑戰)</button>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <section class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-info">
+                    <span class="stat-label">計時 (Timer)</span>
+                    <span id="timer-display" class="stat-value">0.00 秒</span>
+                </div>
+            </div>
+
+            <div class="stat-card highlight">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-info">
+                    <span class="stat-label">目前分數 (Score)</span>
+                    <span id="score-display" class="stat-value">0</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-info">
+                    <span class="stat-label">最高紀錄 (Best)</span>
+                    <span id="best-score-display" class="stat-value">0</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-info">
+                    <span class="stat-label">連爆倍率 (Combo)</span>
+                    <span id="combo-display" class="stat-value">x1</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Game Tip Banner -->
+        <div class="game-tip">
+            💡 <strong>提示：</strong> 點擊【英文單字】聽發音並與對應【圖片】配對。反應越快，得分越高！可切換背景音樂 🎵 與難度模式。
+        </div>
+
+        <!-- Main Game Board -->
+        <main class="game-board-container">
+            <div class="board-column">
+                <h3 class="column-title"><span class="title-badge">1</span> 選擇英文單字 (Words)</h3>
+                <div id="words-grid" class="cards-grid"></div>
+            </div>
+
+            <div class="column-divider">
+                <div class="vs-badge">VS</div>
+            </div>
+
+            <div class="board-column">
+                <h3 class="column-title"><span class="title-badge">2</span> 選擇對應圖片 (Pictures)</h3>
+                <div id="images-grid" class="cards-grid"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Victory Modal -->
+    <div id="victory-modal" class="modal-backdrop hidden">
+        <div class="modal-card">
+            <div class="modal-banner">
+                <span class="trophy-emoji">🏆</span>
+                <h2>恭喜通關！ Level Cleared!</h2>
+                <p id="victory-category-name">你完成了水果主題配對！</p>
+            </div>
+
+            <div class="star-rating" id="star-rating">
+                <span class="star active">★</span>
+                <span class="star active">★</span>
+                <span class="star active">★</span>
+            </div>
+
+            <div class="result-stats">
+                <div class="result-item">
+                    <span class="result-label">本關總得分</span>
+                    <span id="final-score" class="result-value">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">總花費時間</span>
+                    <span id="final-time" class="result-value">0.00s</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">最高連爆 combo</span>
+                    <span id="final-combo" class="result-value">x1</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button id="next-theme-btn" class="btn btn-accent btn-large" style="margin-bottom: 10px;">
+                    <span>👉</span> 挑戰下一個主題 (Next Theme)
+                </button>
+                <button id="modal-restart-btn" class="btn btn-primary btn-large">
+                    <span>🔄</span> 重新挑戰本關 (Play Again)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Toast Notifications Layer -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Canvas for Confetti -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <script src="script.js"></script>
+</body>
+</html>
