@@ -15,26 +15,27 @@
     <div class="bg-glow glow-2"></div>
     <div class="bg-glow glow-3"></div>
 
-    <!-- 1. LANDING HOMEPAGE (首頁：展示 qrcode.png，點按按鈕才進入遊戲) -->
+    <!-- 1. LANDING HOMEPAGE (首頁封面：展示專題資料夾下的 qrcode.png，點按才進入遊戲) -->
     <main id="landing-page" class="landing-container">
         <div class="landing-card">
             <div class="game-icon-large">🔤</div>
             <h1 class="landing-title">英文單字配對大挑戰</h1>
             <p class="landing-subtitle">English Word Match Challenge</p>
             
-            <!-- qrcode.png 直接引用使用者目錄檔案 -->
+            <!-- 專題資料夾下的 qrcode.png 圖片展示區塊 -->
             <div class="landing-qr-wrapper" id="landing-qr-btn" title="點擊也可進入遊戲">
                 <img src="qrcode.png" alt="qrcode.png" class="landing-qr-img" />
                 <p class="qr-caption">📱 手機掃碼遊玩 (qrcode.png)</p>
             </div>
 
+            <!-- 點按進入遊戲按鈕 -->
             <button id="start-game-btn" class="btn btn-primary btn-start">
                 <span>🎮</span> 開始遊戲 (Start Game)
             </button>
         </div>
     </main>
 
-    <!-- 2. GAME BOARD PAGE (遊戲主要頁面：預設隱藏，點擊開始遊戲才顯示) -->
+    <!-- 2. GAME BOARD PAGE (遊戲主要頁面：預設隱藏，點擊開始遊戲或 QR Code 後進入) -->
     <div id="game-page" class="app-container hidden">
         <!-- Header Bar -->
         <header class="game-header">
