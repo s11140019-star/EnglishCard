@@ -37,7 +37,7 @@ const CATEGORIES_DATA = {
 
 // Game State Variables
 let currentCategory = 'fruits';
-let itemCount = 4; // 4 or 6
+let itemCount = 4;
 let selectedWordCard = null;
 let selectedImageCard = null;
 let matchedPairIds = new Set();
@@ -54,7 +54,14 @@ let audioEnabled = true;
 let bgmEnabled = false;
 let bgmTimer = null;
 
-// DOM Elements
+// Page DOM Elements
+const landingPage = document.getElementById('landing-page');
+const gamePage = document.getElementById('game-page');
+const startGameBtn = document.getElementById('start-game-btn');
+const landingQrBtn = document.getElementById('landing-qr-btn');
+const homeBtn = document.getElementById('home-btn');
+
+// Game DOM Elements
 const wordsGrid = document.getElementById('words-grid');
 const imagesGrid = document.getElementById('images-grid');
 const timerDisplay = document.getElementById('timer-display');
@@ -121,7 +128,7 @@ class SoundEffects {
         this.init();
         if (!this.ctx) return;
 
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 major arpeggio
+        const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, idx) => {
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
@@ -233,6 +240,25 @@ function stopBgm() {
     }
 }
 
+// Page Navigation Logic
+function enterGame() {
+    sfx.playClick();
+    landingPage.classList.add('hidden');
+    gamePage.classList.remove('hidden');
+    initGame();
+}
+
+function returnHome() {
+    sfx.playClick();
+    clearInterval(timerInterval);
+    gamePage.classList.add('hidden');
+    landingPage.classList.remove('hidden');
+}
+
+startGameBtn.addEventListener('click', enterGame);
+landingQrBtn.addEventListener('click', enterGame);
+homeBtn.addEventListener('click', returnHome);
+
 // Speech Synthesis Helper
 function speakWord(text) {
     if ('speechSynthesis' in window && audioEnabled) {
@@ -256,7 +282,6 @@ function shuffle(array) {
 
 // Initialize / Restart Game Board
 function initGame() {
-    // Reset state
     selectedWordCard = null;
     selectedImageCard = null;
     matchedPairIds.clear();
@@ -266,29 +291,22 @@ function initGame() {
     timerStarted = false;
     clearInterval(timerInterval);
 
-    // Update Best Score Display
     bestScoreDisplay.textContent = bestScore.toLocaleString();
-
-    // Reset UI
     scoreDisplay.textContent = '0';
     comboDisplay.textContent = 'x1';
     timerDisplay.textContent = '0.00 秒';
     victoryModal.classList.add('hidden');
     stopConfetti();
 
-    // Clear board grids
     wordsGrid.innerHTML = '';
     imagesGrid.innerHTML = '';
 
-    // Slice vocabulary based on difficulty (4 or 6)
     const fullVocab = CATEGORIES_DATA[currentCategory].items;
     const activeVocab = fullVocab.slice(0, itemCount);
 
-    // Shuffle words and images independently
     const shuffledWords = shuffle(activeVocab);
     const shuffledImages = shuffle(activeVocab);
 
-    // Render Word Cards
     shuffledWords.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card word-card';
@@ -308,7 +326,6 @@ function initGame() {
         wordsGrid.appendChild(card);
     });
 
-    // Render Image Cards
     shuffledImages.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card image-card';
@@ -343,9 +360,7 @@ function startTimer() {
 function handleCardClick(card, item) {
     if (card.classList.contains('matched')) return;
 
-    // Start timer on first interaction
     startTimer();
-
     sfx.playClick();
 
     if (card.dataset.type === 'word') {
@@ -387,7 +402,6 @@ function checkMatch() {
         matchedPairIds.add(wordId);
         sfx.playCorrect();
 
-        // Calculate Speed-Based Score
         const now = Date.now();
         const pairDuration = (now - lastPairTime) / 1000;
         lastPairTime = now;
@@ -413,28 +427,23 @@ function checkMatch() {
         const pointsGained = Math.round((baseScore + speedBonus) * combo);
         score += pointsGained;
 
-        // Check & Update LocalStorage Best Score
         if (score > bestScore) {
             bestScore = score;
             localStorage.setItem('wordMatchBestScore', bestScore.toString());
             bestScoreDisplay.textContent = bestScore.toLocaleString();
         }
 
-        // Toast feedback
         showToast(`+${pointsGained.toLocaleString()} Pts! ${speedLabel} (${pairDuration.toFixed(1)}s)`);
 
-        // Update Combo
         if (combo > maxCombo) maxCombo = combo;
         combo++;
         
-        // Update UI
         scoreDisplay.textContent = score.toLocaleString();
         comboDisplay.textContent = `x${combo}`;
 
         selectedWordCard = null;
         selectedImageCard = null;
 
-        // Check Victory Condition
         if (matchedPairIds.size === itemCount) {
             handleVictory();
         }
@@ -469,7 +478,6 @@ function handleVictory() {
     sfx.playVictory();
     startConfetti();
 
-    // Calculate rating stars
     const targetTime = itemCount * 3;
     const numStars = totalTime < targetTime ? 3 : totalTime < (targetTime * 1.8) ? 2 : 1;
     const starContainer = document.getElementById('star-rating');
@@ -653,8 +661,3 @@ function stopConfetti() {
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
-
-// Initialize on page load
-window.addEventListener('DOMContentLoaded', () => {
-    initGame();
-});
